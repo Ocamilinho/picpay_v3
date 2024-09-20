@@ -7,10 +7,9 @@ import org.springframework.stereotype.Service;
 
 import com.ocamilinho.picpay_v3.domains.User;
 import com.ocamilinho.picpay_v3.domains.DTOs.UserDTO;
+import com.ocamilinho.picpay_v3.domains.DTOs.UserResponseDTO;
 import com.ocamilinho.picpay_v3.exceptions.UserNotFoundExpcetion;
 import com.ocamilinho.picpay_v3.repositories.UserRepository;
-// TODO proteger dados criando um ResponseUserDTO
-// TODO refatorar método de criação com carteira vazia
 @Service
 public class UserService {
     final UserRepository repository;
@@ -19,12 +18,13 @@ public class UserService {
         this.repository = repository;
     }
 
-    public UserDTO createUser(UserDTO data){
+    public UserResponseDTO createUser(UserDTO data){
         User newUser = new User(data);
         repository.save(newUser);
-        return data;
+        return transferDTO(newUser);
     }
 
+    
     public void deleteUser(UUID id) throws Exception{
         if(!repository.existsById(id)){
             throw new UserNotFoundExpcetion(id);
@@ -32,16 +32,16 @@ public class UserService {
         repository.deleteById(id);
     }
 
-    public List<User> listAllUsers(){
+    public List<UserResponseDTO> listAllUsers(){
         List<User> list = repository.findAll();
-        return list;
+        return list.stream().map(e->transferDTO(e)).toList();
     }
-
+    
     public User findUserById(UUID id){
         return repository.findById(id).orElseThrow(() -> { throw new UserNotFoundExpcetion(id);});
     }
 
-    public UserDTO updateUser(UUID id, UserDTO data){
+    public UserResponseDTO updateUser(UUID id, UserDTO data){
         User currentUser = repository.findById(id).orElseThrow(() -> { throw new UserNotFoundExpcetion(id);});
         if(data.name() != null){
             currentUser.setName(data.name());
@@ -55,12 +55,14 @@ public class UserService {
         if(data.document() != null){
             currentUser.setDocument(data.document());
         }
+        if(data.type()!=null){
+            currentUser.setType(data.type());
+        } 
         repository.save(currentUser);
         return transferDTO(currentUser);
     }
-
-    private UserDTO transferDTO(User user) {
-        return new UserDTO(user.getName(), user.getDocument(), user.getEmail(), user.getType(), user.getPassword());
+    private UserResponseDTO transferDTO(User data) {
+        return new UserResponseDTO(data.getId(), data.getName(), data.getEmail(), data.getDocument(), data.getType());
     }
 
     

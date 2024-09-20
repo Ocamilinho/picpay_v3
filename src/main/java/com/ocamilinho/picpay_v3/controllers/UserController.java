@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.ocamilinho.picpay_v3.domains.User;
 import com.ocamilinho.picpay_v3.domains.DTOs.UserDTO;
+import com.ocamilinho.picpay_v3.domains.DTOs.UserResponseDTO;
 
 
 
@@ -30,13 +30,13 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<List<User>> listAll(){
-        List<User> list = service.listAllUsers();
+    public ResponseEntity<List<UserResponseDTO>> listAll(){
+        List<UserResponseDTO> list = service.listAllUsers();
         return new ResponseEntity<>(list, HttpStatus.OK);
     }
     @PostMapping
-    public ResponseEntity<UserDTO> createUser(@RequestBody UserDTO data){
-        UserDTO user = service.createUser(data);
+    public ResponseEntity<UserResponseDTO> createUser(@RequestBody UserDTO data){
+        UserResponseDTO user = service.createUser(data);
         return new ResponseEntity<>(user, HttpStatus.CREATED);
     }
     @DeleteMapping("{id}")
@@ -45,8 +45,8 @@ public class UserController {
         return new ResponseEntity<Void>(HttpStatus.OK); 
     }
     @PutMapping("{id}")
-    public ResponseEntity<UserDTO> updateUser(@PathVariable String id,@RequestBody UserDTO data){
-        UserDTO user = service.updateUser(UUID.fromString(id) ,data);
+    public ResponseEntity<UserResponseDTO> updateUser(@PathVariable String id,@RequestBody UserDTO data){
+        UserResponseDTO user = service.updateUser(UUID.fromString(id) ,data);
         return new ResponseEntity<>(user, HttpStatus.CREATED);
     }
 }
