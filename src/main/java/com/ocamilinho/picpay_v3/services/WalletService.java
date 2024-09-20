@@ -29,6 +29,7 @@ public class WalletService {
         newWallet.setOwner(owner);
         newWallet.setDescription(data.description());
         newWallet.setIsMain(repository.findWalletsByUserId(id).isEmpty());
+        newWallet.setBalance(data.balance());
         repository.save(newWallet);
         return newWallet;
     }
@@ -63,6 +64,12 @@ public class WalletService {
             repository.save(newWallet);
         }
         repository.delete(currentWallet);
+    }
+    public Wallet findWalletById(UUID id) {
+        return repository.findById(id).orElseThrow(()-> new NotFoundWalletException(id));
+    }
+    public void saveWallet(Wallet wallet) {
+        repository.save(wallet);
     }
 
 }
