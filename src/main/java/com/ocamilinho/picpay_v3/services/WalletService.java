@@ -14,6 +14,8 @@ import com.ocamilinho.picpay_v3.exceptions.NotFoundWalletException;
 import com.ocamilinho.picpay_v3.exceptions.SingleWalletException;
 import com.ocamilinho.picpay_v3.repositories.WalletRepository;
 
+// TODO tratar exceção pra quando não existir carteira principal ou quando não existir usuário
+// TODO tratar situação quando o usuário não existe 
 @Service
 public class WalletService {
     final WalletRepository repository;
@@ -41,7 +43,10 @@ public class WalletService {
         return repository.findAll();
     }
     public Wallet findMainUserWallet(UUID id){
-        return repository.findMainUserWallet(id);
+        if(userService.findUserById(id) != null){
+            return repository.findMainUserWallet(id);
+        }
+        return null;
     }
 
     public void removeWallet(UUID id) throws Exception{
