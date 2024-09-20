@@ -10,6 +10,7 @@ import com.ocamilinho.picpay_v3.exceptions.InsufficientBalanceException;
 import com.ocamilinho.picpay_v3.exceptions.NotFoundWalletException;
 import com.ocamilinho.picpay_v3.exceptions.SingleWalletException;
 import com.ocamilinho.picpay_v3.exceptions.UserNotFoundExpcetion;
+import com.ocamilinho.picpay_v3.exceptions.UserTypeCannotMakeTransactionException;
 
 @RestControllerAdvice
 public class ApplicationAdviceController {
@@ -32,5 +33,9 @@ public class ApplicationAdviceController {
     @ExceptionHandler(CannotDeletePrimaryWalletException.class)
     public ResponseEntity<String> cannotDeletePrimaryWallet(CannotDeletePrimaryWalletException ex){
         return new ResponseEntity<>(ex.getMessage(),HttpStatus.CONFLICT);
+    }
+    @ExceptionHandler(UserTypeCannotMakeTransactionException.class)
+    public ResponseEntity<String> cannotMakeTransaction(UserTypeCannotMakeTransactionException ex){
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

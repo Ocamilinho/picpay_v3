@@ -5,15 +5,15 @@ import java.time.LocalDateTime;
 import org.springframework.stereotype.Service;
 
 import com.ocamilinho.picpay_v3.domains.Transaction;
+import com.ocamilinho.picpay_v3.domains.UserType;
 import com.ocamilinho.picpay_v3.domains.Wallet;
 import com.ocamilinho.picpay_v3.domains.DTOs.TransactionDTO;
 import com.ocamilinho.picpay_v3.exceptions.InsufficientBalanceException;
+import com.ocamilinho.picpay_v3.exceptions.UserTypeCannotMakeTransactionException;
 import com.ocamilinho.picpay_v3.repositories.TransactionRepository;
 
 // TODO implementar serviço de notificação com open feign
 // TODO implementar serviço de verificação externo
-// TODO verificar se o saldo é menor que o necessario e lancar uma exceção de balanço insuficiente 
-
 @Service
 public class TransactionService {
     final TransactionRepository repository;
@@ -33,6 +33,10 @@ public class TransactionService {
 
         if(mainWalletSender.getBalance().compareTo(data.amount())<0){
             throw new InsufficientBalanceException();
+        }
+
+        if(userService.findUserById(data.sender_id()).getType() == UserType.MERCHANT){
+            throw new UserTypeCannotMakeTransactionException(UserType.MERCHANT.toString());
         }
 
         mainWalletSender.setBalance(mainWalletSender.getBalance().subtract(data.amount()));
