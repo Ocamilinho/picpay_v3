@@ -9,11 +9,10 @@ import org.springframework.stereotype.Service;
 import com.ocamilinho.picpay_v3.domains.User;
 import com.ocamilinho.picpay_v3.domains.Wallet;
 import com.ocamilinho.picpay_v3.domains.DTOs.WalletDTO;
+import com.ocamilinho.picpay_v3.exceptions.CannotDeletePrimaryWalletException;
 import com.ocamilinho.picpay_v3.exceptions.NotFoundWalletException;
 import com.ocamilinho.picpay_v3.exceptions.SingleWalletException;
 import com.ocamilinho.picpay_v3.repositories.WalletRepository;
-// TODO conferir se a query funciona no banco
-// TODO ao apagar carteira principal, definir carteira secundária como principal
 
 @Service
 public class WalletService {
@@ -53,10 +52,15 @@ public class WalletService {
         if(repository.findWalletsByUserId(owner_id).size() == 1){
             throw new SingleWalletException();
         }
-
-
-        if(!repository.existsById(id)){
-            throw new NotFoundWalletException();
+        if(currentWallet.getId() == repository.findMainUserWallet(owner_id).getId()){
+            List<Wallet> list = repository.findWalletsByUserId(owner_id);
+            Wallet newWallet = list
+                .stream()
+                .filter(e->e.getIsMain().equals(Boolean.FALSE))
+                .findAny()
+                .orElseThrow(()-> new CannotDeletePrimaryWalletException());
+            newWallet.setIsMain(Boolean.TRUE);
+            repository.save(newWallet);
         }
         repository.delete(currentWallet);
     }
