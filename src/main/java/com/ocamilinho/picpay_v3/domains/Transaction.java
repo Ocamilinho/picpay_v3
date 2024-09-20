@@ -1,17 +1,18 @@
 package com.ocamilinho.picpay_v3.domains;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.UUID;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -26,11 +27,14 @@ public class Transaction {
     private BigDecimal amount;
 
     @ManyToOne
-    private Wallet sender;
+    @JoinColumn(name = "sender_id")
+    @JsonBackReference
+    private Wallet senderWallet;
 
     @ManyToOne
-    private Wallet receiver;
+    @JoinColumn(name = "receiver_id")
+    @JsonBackReference
+    private Wallet receiverWallet;
     
-    @Temporal(TemporalType.TIMESTAMP)
-    private Timestamp timestamp;
+    private LocalDateTime timestamp;
 }

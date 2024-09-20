@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -34,6 +35,10 @@ public class Wallet {
     @JsonBackReference
     private User owner;
 
-    @OneToMany
-    private List<Transaction> transactions;
+    @OneToMany(mappedBy = "senderWallet")
+    @JsonManagedReference
+    private List<Transaction> sender_transactions;
+
+    @OneToMany(mappedBy = "receiverWallet")
+    private List<Transaction> receiver_transactions;
 }
